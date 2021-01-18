@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+
+<style>
+@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700');
+  body{
+    background: url('http://all4desktop.com/data_images/original/4236532-background-images.jpg');
+    font-family: 'Roboto Condensed', sans-serif;
+    color: #262626;
+    margin: 5% 0;
+  }
+  .container{
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+  @media (min-width: 1200px)
+  {
+    .container{
+      max-width: 1140px;
+    }
+  }
+  .d-flex{
+    display: flex;
+    flex-direction: row;
+    background: #f6f6f6;
+    border-radius: 0 0 5px 5px;
+    padding: 25px;
+  }
+  form{
+    flex: 4;
+  }
+  .Yorder{
+    flex: 2;
+  }
+  .title{
+    background: -webkit-gradient(linear, left top, right bottom, color-stop(0, #5195A8), color-stop(100, #70EAFF));
+    background: -moz-linear-gradient(top left, #5195A8 0%, #70EAFF 100%);
+    background: -ms-linear-gradient(top left, #5195A8 0%, #70EAFF 100%);
+    background: -o-linear-gradient(top left, #5195A8 0%, #70EAFF 100%);
+    background: linear-gradient(to bottom right, #5195A8 0%, #70EAFF 100%);
+    border-radius:5px 5px 0 0 ;
+    padding: 20px;
+    color: #f6f6f6;
+  }
+  h2{
+    margin: 0;
+    padding-left: 15px;
+  }
+  .required{
+    color: red;
+  }
+  label, table{
+    display: block;
+    margin: 15px;
+  }
+  label>span{
+    float: left;
+    width: 25%;
+    margin-top: 12px;
+    padding-right: 10px;
+  }
+  input[type="text"], input[type="tel"], input[type="email"], select
+  {
+    width: 70%;
+    height: 30px;
+    padding: 5px 10px;
+    margin-bottom: 10px;
+    border: 1px solid #dadada;
+    color: #888;
+  }
+  select{
+    width: 72%;
+    height: 45px;
+    padding: 5px 10px;
+    margin-bottom: 10px;
+  }
+  .Yorder{
+    margin-top: 15px;
+    height: 600px;
+    padding: 20px;
+    border: 1px solid #dadada;
+  }
+  table{
+    margin: 0;
+    padding: 0;
+  }
+  th{
+    border-bottom: 1px solid #dadada;
+    padding: 10px 0;
+  }
+  tr>td:nth-child(1){
+    text-align: left;
+    color: #2d2d2a;
+  }
+  tr>td:nth-child(2){
+    text-align: right;
+    color: #52ad9c;
+  }
+  td{
+    border-bottom: 1px solid #dadada;
+    padding: 25px 25px 25px 0;
+  }
+
+  p{
+    display: block;
+    color: #888;
+    margin: 0;
+    padding-left: 25px;
+  }
+  .Yorder>div{
+    padding: 15px 0;
+  }
+
+  button{
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 30px;
+    background: #52ad9c;
+    color: #fff;
+    font-size: 15px;
+    font-weight: bold;
+  }
+  button:hover{
+    cursor: pointer;
+    background: #428a7d;
+  }
+
+  table {
+    width: 50%;
+}
+th {
+    background: #c1e6ff;
+    font-weight: bold;
+    padding: 6px;
+}
+td {
+    background: #f9f9f9;
+    padding: 6px;
+}
+
+</style>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js">  </script>
+<script>
+  $(document).ready(function(){
+    var item, qty, price;
+    $("#submit").click(function(){
+      item=$("#Item").val();
+      qty=$("#Qty").val();
+      price=$("#Price").val();
+      $.post("http://localhost:2222/api/createOrder",{Item: item, Qty: qty, Price: price}, function(info){
+        alert(info);
+      });
+    });
+  });
+
+
+  $(document).ready(function(){
+    var data1, data2;
+    $("#submitStatus").click(function(){
+      data1=$("#orderid").val();
+      data2=$("#order_status").val();
+      $.post("http://localhost:2222/api/updateOrderStatus",{orderid: data1, order_status: data2}, function(info){
+        alert(info);
+      });
+    });
+  });
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var order_id;
+  $("#check").click(function(){
+    $("#myTable tbody").empty();
+    order_id=$("#order_id").val();
+    $.post("http://localhost:2222/api/fetchOrderDetails",{order_id: order_id}, function(data){
+      if (data.includes("Message: There is no order created with this order_id") || data.includes("Order ID is missing")) {
+        alert(data);
+      }
+      else {
+        let info = JSON.parse(data)
+        console.log(info);
+        for (var i=0; i<info.length; i++) {
+            var row = $('<tr><td>' + info[i].order_id+ '</td><td>' + info[i].item_name + '</td><td>' + info[i].quantity + '</td><td>' + info[i].price + '</td><td>' + info[i].order_status + '</td></tr>');
+            $('#myTable').append(row);
+          }
+      }
+    });
+  });
+});
+
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $("#checkAll").click(function(){
+    $("#myorderTable tbody").empty();
+    $.get("http://localhost:2222/api/fetchAllOrderDetails", function(data){
+      let info = JSON.parse(data)
+      for (var i=0; i<info.length; i++) {
+          var row = $('<tr><td>' + info[i].order_id+ '</td><td>' + info[i].item_name + '</td><td>' + info[i].quantity + '</td><td>' + info[i].price + '</td><td>' + info[i].order_status + '</td></tr>');
+          $('#myorderTable').append(row);
+        }
+    });
+  });
+  $("#clear").click(function(){
+    $("#myorderTable tbody").empty();
+  });
+});
+
+</script>
+
+</head>
+
+<body>
+<div class="container">
+  <div class="title" style="margin-top : 2%;">
+      <h1>New Order</h1>
+  </div>
+<div class="d-flex">
+  <form action="" method="">
+    <label>
+      <span class="Item">Item Name <span class="required">*</span></span>
+      <input type="text" id="Item">
+    </label>
+    <label>
+      <span class="Qty">Quantity <span class="required">*</span></span>
+      <input type="text" id="Qty">
+    </label>
+    <label>
+      <span class="Price">Price <span class="required">*</span></span>
+      <input type="text" id="Price">
+    </label>
+    <button type="button" id="submit" >Create Order</button>
+  </form>
+ </div>
+
+ <div class="title" style="margin-top : 2%;">
+     <h1>Fetch Order With Order_ID</h1>
+ </div>
+<div class="d-flex">
+  <form action="" method="">
+  <label>
+    <span class="order_id">Item Name <span class="required">*</span></span>
+    <input type="text" id="order_id">
+  </label>
+  <button type="button" id="check" >Fetch Order</button>
+    <table id="myTable" style="margin-left : 38%; margin-top : 2%;">
+      <thead>
+        <th>Order_ID</th>
+        <th>Item_name</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Order_status</th>
+      </thead>
+    </table><br>
+    </form>
+  </div><!-- Yorder -->
+
+  <div class="title" style="margin-top : 2%;">
+      <h1>Updata Order Status</h1>
+  </div>
+  <div class="d-flex">
+    <form action="" method="">
+      <label>
+        <span class="orderid">Order_ID <span class="required">*</span></span>
+        <input type="text" id="orderid">
+      </label>
+      <label>
+        <span class="order_status">Order_status <span class="required">*</span></span>
+        <input type="text" id="order_status">
+      </label>
+
+      <button type="button" id="submitStatus" >Updata</button>
+    </form>
+   </div>
+
+   <div class="title" style="margin-top : 2%;">
+       <h1>Fetch All Order</h1>
+   </div>
+  <div class="d-flex">
+    <form action="" method="">
+    <button type="button" id="checkAll" >Fetch All Order</button>
+      <table id="myorderTable" style="margin-left : 38%; margin-top : 2%;">
+        <thead>
+          <th>Order_ID</th>
+          <th>Item_name</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Order_status</th>
+        </thead>
+      </table><br>
+      <button type="button" id="clear" >Clear the table</button>
+      </form>
+    </div><!-- Yorder -->
+
+</div>
+
+</body>
+</html>
